@@ -8,7 +8,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "migrate": "node db/migrations/migrate.js"
+    "migrate": "node db/migrations/migrate.js",
+    "populate": "node db/migrations/populate.js",
+    "update-products": "node db/migrations/update-products.js"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",

@@ -56,3 +56,16 @@
 .producer-list-leave-to {
   opacity: 0;
 }
+
+/* Product counter number slide animations */
+.count-up-enter-active,
+.count-up-leave-active,
+.count-down-enter-active,
+.count-down-leave-active {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  position: absolute;
+}
+.count-up-enter-from  { transform: translateY(8px);  opacity: 0; }
+.count-up-leave-to    { transform: translateY(-8px); opacity: 0; }
+.count-down-enter-from { transform: translateY(-8px); opacity: 0; }
+.count-down-leave-to   { transform: translateY(8px);  opacity: 0; }

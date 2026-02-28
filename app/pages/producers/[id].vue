@@ -1,13 +1,22 @@
 <script setup lang="ts">
+import type { PopularProduct } from '~/types/producer'
+
 const route = useRoute()
 const producersStore = useProducersStore()
+const cartStore = useCartStore()
 
-const { currentProducer: producer, loading } = storeToRefs(producersStore)
+const { currentProducer: producer, otherProducts, loading } = storeToRefs(producersStore)
 
 const deliveryMethod = ref<'delivery' | 'pickup'>('delivery')
+const activeModal = ref<PopularProduct | null>(null)
 
 onMounted(async () => {
+  cartStore.reset()
   await producersStore.fetchById(route.params.id as string)
+})
+
+onUnmounted(() => {
+  cartStore.reset()
 })
 
 useHead({
@@ -16,7 +25,7 @@ useHead({
 </script>
 
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="min-h-screen bg-white" :class="cartStore.totalItems > 0 ? 'pb-28' : ''">
     <AppHeader
       :breadcrumbs="producer
         ? [{ label: 'Főoldal', to: '/' }, { label: producer.name }]
@@ -78,30 +87,29 @@ useHead({
         </div>
       </div>
 
-      <!-- Most popular products -->
-      <div class="px-4 pb-10">
-        <h2 class="text-base font-semibold text-gray-800 mb-3">Legtöbbet rendeltek</h2>
+      <!-- Most ordered products -->
+      <div v-if="producer.popularProducts?.length" class="px-4 pb-4">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Legtöbbet rendeltek</h2>
         <div class="flex flex-col">
-          <div
+          <ProductOrderCard
             v-for="product in producer.popularProducts"
             :key="product.id"
-            class="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0"
-          >
-            <div class="flex-1 min-w-0">
-              <p class="font-semibold text-gray-900 text-sm">{{ product.name }}</p>
-              <p class="text-green-600 font-bold text-sm mt-0.5">
-                {{ product.price.toLocaleString('hu-HU') }} Ft
-              </p>
-              <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">{{ product.description }}</p>
-            </div>
-            <div class="flex-shrink-0 w-20 h-20">
-              <img
-                :src="product.image"
-                :alt="product.name"
-                class="w-full h-full object-cover rounded-xl"
-              />
-            </div>
-          </div>
+            :product="product"
+            @open-modal="activeModal = $event"
+          />
+        </div>
+      </div>
+
+      <!-- Other products -->
+      <div v-if="otherProducts.length" class="px-4 pb-10">
+        <h2 class="text-base font-semibold text-gray-800 mb-2 mt-2">További termékek</h2>
+        <div class="flex flex-col">
+          <ProductOrderCard
+            v-for="product in otherProducts"
+            :key="product.id"
+            :product="product"
+            @open-modal="activeModal = $event"
+          />
         </div>
       </div>
     </div>
@@ -115,4 +123,13 @@ useHead({
       </div>
     </div>
   </div>
+
+  <!-- Product modal -->
+  <ProductModal
+    :product="activeModal"
+    @close="activeModal = null"
+  />
+
+  <!-- Fixed order bar -->
+  <OrderBar />
 </template>

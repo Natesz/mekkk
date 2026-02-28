@@ -9,9 +9,15 @@ CREATE TABLE IF NOT EXISTS products (
   name             TEXT        NOT NULL,
   label            TEXT        NOT NULL,
   image            TEXT,
+  price            INTEGER     NOT NULL DEFAULT 0,
+  description      TEXT        NOT NULL DEFAULT '',
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- If upgrading an existing database, run:
+-- ALTER TABLE products ADD COLUMN IF NOT EXISTS price INTEGER NOT NULL DEFAULT 0;
+-- ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
 
 -- Producers
 CREATE TABLE IF NOT EXISTS producers (
@@ -37,6 +43,7 @@ CREATE TABLE IF NOT EXISTS producer_products (
 CREATE TABLE IF NOT EXISTS popular_products (
   id           TEXT        PRIMARY KEY,
   producer_id  TEXT        NOT NULL REFERENCES producers(id) ON DELETE CASCADE,
+  product_id   TEXT        REFERENCES products(id) ON DELETE SET NULL,
   name         TEXT        NOT NULL,
   price        INTEGER     NOT NULL,
   description  TEXT,
@@ -44,6 +51,9 @@ CREATE TABLE IF NOT EXISTS popular_products (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- If upgrading an existing database, run:
+-- ALTER TABLE popular_products ADD COLUMN IF NOT EXISTS product_id TEXT REFERENCES products(id) ON DELETE SET NULL;
 
 -- ── updated_at auto-trigger ───────────────────────────────────────────────────
 

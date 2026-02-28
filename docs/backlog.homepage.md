@@ -64,6 +64,22 @@
 - `app/pages/kecskesajt/tortenete.vue` – kecskesajt történeti háttér
 - `app/assets/css/main.css` – `slide-left` animáció hozzáadva
 
+## Iteráció 5 – Termék részletek és interaktív rendelés (PRD 05)
+
+- `db/migrations/schema.sql` – `products` tábla: `price INTEGER`, `description TEXT` hozzáadva; `popular_products`: `product_id TEXT FK` hozzáadva
+- `db/migrations/update-products.js` – script: 10 termék ár+leírás frissítése, `popular_products.product_id` beállítása
+- `package.json` – `populate` + `update-products` npm script hozzáadva
+- `app/types/producer.ts` – `Producer` interfész: `otherProducts?: PopularProduct[]` mező hozzáadva
+- `app/stores/cart.ts` – új Pinia store: session-alapú counter state, `increment/decrement/getQuantity/reset`, `totalItems`, `totalPrice`
+- `app/stores/producers.ts` – `otherProducts` ref hozzáadva; `fetchById` lekéri a `product_id`-t a popular_products-ből; `fetchOtherProducts` kiszűri a popular termékeket a producer_products-ből
+- `app/assets/css/main.css` – `count-up` / `count-down` Transition animációk hozzáadva (függőleges szám csúszás)
+- `app/components/producers/ProductOrderCard.vue` – termék kártya: 50% kép + 50% info; zöld + gomb (1/3 kép méret); bal irányba bővülő minus|counter|plus sáv; counter animáció
+- `app/components/producers/ProductModal.vue` – 75% magasságú bottom sheet: teljes szélességű kép, X gomb, zöld ár, leírás, counter bal, Hozzáadás gomb jobb; háttérre kattintva bezár
+- `app/components/producers/OrderBar.vue` – fix bottom bar: zöld, "Rendelés megtekintése" + összár, megjelenik/eltűnik dinamikusan
+- `app/pages/producers/[id].vue` – "Legtöbbet rendeltek" + "További termékek" szekciók `ProductOrderCard`-okkal; `ProductModal` + `OrderBar` integrálva; cart reset mount/unmount-kor
+- `app/components/HamburgerMenu.vue` – "AI receptek" menüpont hozzáadva (zöld, nagyobb betű, AI ikon, elválasztóval)
+- `app/pages/ai-receptek.vue` – placeholder oldal AI ikon fejléccel, skeleton kártyák, "fejlesztés alatt" banner
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->

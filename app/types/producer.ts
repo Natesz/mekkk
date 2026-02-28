@@ -15,4 +15,5 @@ export interface Producer {
   deliveryMinutes: number
   address: string
   popularProducts?: PopularProduct[]
+  otherProducts?: PopularProduct[]
 }
