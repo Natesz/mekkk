@@ -52,6 +52,18 @@
 - `docs/supabase_use.md` – teljes Supabase integrációs dokumentáció
 - `README.md` – stack, env setup, migrate parancs frissítve
 
+## Iteráció 4 – DB feltöltés + hamburger menü (PRD 04)
+
+- `db/migrations/populate.js` – 10 termék (public/pictures képekkel) + 5 fix termelő (maria, hegedus, zsolt, dominik, dzsoki) + 20 random termelő (picsum) + popular_products + producer_products (202 link)
+- Supabase Storage: összes kép feltöltve (`products/`, `producers/`, `popular-products/`)
+- `app/components/AppHeader.vue` – 3 oszlopos fejléc: hamburger bal, logo közép (NuxtLink /), profil ikon jobb; breadcrumbs alatta
+- `app/components/HamburgerMenu.vue` – bal oldali drawer (80% szélesség), Teleport, slide-left + fade animáció, body scroll lock, overlay-kattintásra bezár
+- `app/pages/rolunk.vue`, `szabalyzat.vue`, `termeloink.vue` – placeholder oldalak breadcrumbs navigációval
+- `app/pages/kecskesajt/tipusok.vue` – 10 sajttípus leírással
+- `app/pages/kecskesajt/keszites.vue` – 6 lépéses sajtkészítési folyamat
+- `app/pages/kecskesajt/tortenete.vue` – kecskesajt történeti háttér
+- `app/assets/css/main.css` – `slide-left` animáció hozzáadva
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->

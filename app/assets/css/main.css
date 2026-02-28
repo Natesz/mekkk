@@ -37,6 +37,16 @@
   opacity: 0;
 }
 
+/* Hamburger menu slide-left */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-left-enter-from,
+.slide-left-leave-to {
+  transform: translateX(-100%);
+}
+
 /* Producer list item transitions */
 .producer-list-enter-active,
 .producer-list-leave-active {
