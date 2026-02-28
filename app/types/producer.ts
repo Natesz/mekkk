@@ -14,6 +14,5 @@ export interface Producer {
   reviewCount: number
   deliveryMinutes: number
   address: string
-  productIds: string[]
-  popularProducts: PopularProduct[]
+  popularProducts?: PopularProduct[]
 }

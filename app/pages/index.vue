@@ -2,7 +2,7 @@
 const productsStore = useProductsStore()
 const producersStore = useProducersStore()
 
-const { products, selectedProductId, selectedProduct } = storeToRefs(productsStore)
+const { products, selectedProductId, selectedProduct, loading: productsLoading } = storeToRefs(productsStore)
 
 const {
   filter30min,
@@ -13,13 +13,17 @@ const {
   reset: resetFilters,
 } = useProducerFilters()
 
-const rawProducers = computed(() =>
-  selectedProduct.value
-    ? producersStore.getByProductId(selectedProduct.value.id)
-    : [],
-)
+const visibleProducers = computed(() => applyFilters(producersStore.currentProducers))
 
-const visibleProducers = computed(() => applyFilters(rawProducers.value))
+onMounted(() => {
+  productsStore.fetchProducts()
+})
+
+async function handleSelectProduct(id: string) {
+  productsStore.selectProduct(id)
+  resetFilters()
+  await producersStore.fetchByProductId(id)
+}
 
 function toggle30min() {
   filter30min.value = !filter30min.value
@@ -31,6 +35,7 @@ function toggleTopRating() {
 
 function handleReset() {
   productsStore.resetSelection()
+  producersStore.clearCurrentProducers()
   resetFilters()
 }
 
@@ -51,10 +56,14 @@ function handleResetSort() {
 
     <main>
       <section class="pt-4">
+        <div v-if="productsLoading" class="flex justify-center py-6">
+          <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+        </div>
         <ProductCarousel
+          v-else
           :products="products"
           :selected-product-id="selectedProductId"
-          @select="productsStore.selectProduct"
+          @select="handleSelectProduct"
         />
       </section>
 
@@ -73,7 +82,11 @@ function handleResetSort() {
 
       <Transition name="slide-down">
         <section v-if="selectedProduct" class="mt-4 pb-8">
+          <div v-if="producersStore.loading" class="flex justify-center py-8">
+            <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+          </div>
           <ProducerList
+            v-else
             :producers="visibleProducers"
             @reset="handleReset"
           />

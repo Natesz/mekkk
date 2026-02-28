@@ -3,5 +3,4 @@ export interface Product {
   name: string
   label: string
   image: string
-  producerIds: string[]
 }

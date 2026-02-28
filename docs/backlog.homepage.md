@@ -35,6 +35,23 @@
 - `app/pages/index.vue` – filter composable bedrótolva, FilterRow + SortingBottomSheet integrálva
 - `app/assets/css/main.css` – `slide-up`, `fade`, `producer-list` animációk hozzáadva
 
+## Iteráció 3 – Supabase backend integráció (PRD 03)
+
+- `package.json` – `@supabase/supabase-js` dependency hozzáadva, `npm run migrate` script
+- `nuxt.config.ts` – `runtimeConfig.public.supabaseUrl` + `supabaseAnonKey`
+- `.env.example` – app és migration env változók dokumentálva
+- `app/types/product.ts` – `producerIds` eltávolítva (DB kezeli)
+- `app/types/producer.ts` – `productIds` eltávolítva, `popularProducts` opcionális
+- `app/composables/useSupabase.ts` – singleton Supabase kliens, `useRuntimeConfig()` alapján
+- `app/stores/products.ts` – hardcoded mock → `fetchProducts()` async Supabase query
+- `app/stores/producers.ts` – hardcoded mock → `fetchByProductId()` + `fetchById()` async Supabase query join-nal
+- `app/pages/index.vue` – `onMounted` fetch, async product select handler, loading spinner
+- `app/pages/producers/[id].vue` – `onMounted` Supabase fetch, loading state
+- `db/migrations/schema.sql` – 4 tábla CREATE + updated_at trigger + RLS public read policy
+- `db/migrations/migrate.js` – standalone seed script: Storage bucket, képfeltöltés picsum → Supabase, upsert
+- `docs/supabase_use.md` – teljes Supabase integrációs dokumentáció
+- `README.md` – stack, env setup, migrate parancs frissítve
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->

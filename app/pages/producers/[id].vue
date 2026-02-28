@@ -2,9 +2,13 @@
 const route = useRoute()
 const producersStore = useProducersStore()
 
-const producer = computed(() => producersStore.getById(route.params.id as string))
+const { currentProducer: producer, loading } = storeToRefs(producersStore)
 
 const deliveryMethod = ref<'delivery' | 'pickup'>('delivery')
+
+onMounted(async () => {
+  await producersStore.fetchById(route.params.id as string)
+})
 
 useHead({
   title: computed(() => producer.value ? `${producer.value.name} – MEKKK` : 'MEKKK'),
@@ -19,7 +23,11 @@ useHead({
         : [{ label: 'Főoldal', to: '/' }]"
     />
 
-    <div v-if="producer">
+    <div v-if="loading" class="flex justify-center py-20">
+      <div class="w-8 h-8 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+    </div>
+
+    <div v-else-if="producer">
       <!-- Hero image -->
       <div class="w-full h-56 sm:h-72 overflow-hidden">
         <img
