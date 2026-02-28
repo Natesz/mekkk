@@ -12,7 +12,7 @@ export interface Producer {
   image: string
   rating: number
   reviewCount: number
-  deliveryTime: string
+  deliveryMinutes: number
   address: string
   productIds: string[]
   popularProducts: PopularProduct[]

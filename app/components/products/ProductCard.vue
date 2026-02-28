@@ -19,7 +19,7 @@ const emit = defineEmits<{
     <div class="relative w-16 h-16">
       <div
         class="absolute inset-0 rounded-xl transition-all duration-300"
-        :class="selected ? 'bg-green-500' : 'bg-green-100'"
+        :class="selected ? 'bg-green-700 scale-105' : 'bg-transparent'"
       />
       <img
         :src="product.image"

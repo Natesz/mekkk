@@ -9,22 +9,26 @@ defineProps<{
 <template>
   <NuxtLink
     :to="`/producers/${producer.id}`"
-    class="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-gray-50 transition-colors active:bg-gray-100"
+    class="block w-[90%] mx-auto rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 active:scale-[0.99]"
   >
-    <div class="w-20 h-20">
+    <div class="w-full h-44 overflow-hidden">
       <img
         :src="producer.image"
         :alt="producer.name"
-        class="w-full h-full object-cover rounded-full border-2 border-green-100"
+        class="w-full h-full object-cover"
       />
     </div>
-    <div class="text-center">
-      <p class="text-sm font-semibold text-gray-800 leading-tight">{{ producer.name }}</p>
-      <p class="text-xs text-gray-500 mt-0.5">
-        <span class="text-green-500">★</span>
-        {{ producer.rating }} ({{ producer.reviewCount }})
-      </p>
-      <p class="text-xs text-gray-400 mt-0.5">{{ producer.deliveryTime }}</p>
+    <div class="px-4 py-3">
+      <p class="font-semibold text-gray-900 text-base">{{ producer.name }}</p>
+      <div class="flex items-center gap-3 mt-1.5 text-sm text-gray-500">
+        <span class="flex items-center gap-1">
+          <span class="text-green-500 text-base leading-none">★</span>
+          <span class="font-medium text-gray-700">{{ producer.rating }}</span>
+          <span class="text-gray-400">({{ producer.reviewCount }})</span>
+        </span>
+        <span class="text-gray-300">·</span>
+        <span>{{ producer.deliveryMinutes }} perc</span>
+      </div>
     </div>
   </NuxtLink>
 </template>

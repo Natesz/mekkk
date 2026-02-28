@@ -7,7 +7,7 @@ const mockProducers: Producer[] = [
     image: 'https://picsum.photos/seed/kovacs-farm/400/400',
     rating: 4.8,
     reviewCount: 132,
-    deliveryTime: '1–2 nap',
+    deliveryMinutes: 18,
     address: '2040 Budaörs, Legelő utca 12.',
     productIds: ['sos', 'hazi'],
     popularProducts: [
@@ -22,7 +22,7 @@ const mockProducers: Producer[] = [
     image: 'https://picsum.photos/seed/zold-legelo/400/400',
     rating: 4.6,
     reviewCount: 87,
-    deliveryTime: '2–3 nap',
+    deliveryMinutes: 24,
     address: '2073 Zsámbék, Rét út 5.',
     productIds: ['edes', 'kapros'],
     popularProducts: [
@@ -36,7 +36,7 @@ const mockProducers: Producer[] = [
     image: 'https://picsum.photos/seed/hegyi-majorsag/400/400',
     rating: 4.9,
     reviewCount: 214,
-    deliveryTime: '1–2 nap',
+    deliveryMinutes: 42,
     address: '2025 Visegrád, Hegyi dűlő 3.',
     productIds: ['sos', 'kapros', 'fustolt'],
     popularProducts: [
@@ -51,7 +51,7 @@ const mockProducers: Producer[] = [
     image: 'https://picsum.photos/seed/napfeny-farm/400/400',
     rating: 4.5,
     reviewCount: 63,
-    deliveryTime: '3–4 nap',
+    deliveryMinutes: 27,
     address: '7621 Pécs, Napfény sor 8.',
     productIds: ['edes', 'hazi', 'fustolt'],
     popularProducts: [
