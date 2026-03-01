@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   runtimeConfig: {
-    geminiApiKey: '',
+    openaiApiKey: '',
     public: {
       supabaseUrl: '',
       supabaseAnonKey: '',

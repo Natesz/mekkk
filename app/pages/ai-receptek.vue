@@ -6,12 +6,12 @@ const { products, loading: productsLoading } = storeToRefs(productsStore)
 
 const selectedIds = ref<string[]>([])
 const isGenerating = ref(false)
+const generatingStep = ref<'recipe' | 'image' | null>(null)
 const error = ref<string | null>(null)
 
 interface Recipe {
   title: string
   description: string
-  ingredients: string[]
   steps: string[]
 }
 
@@ -54,19 +54,33 @@ async function generateRecipe() {
 
   try {
     const productNames = selectedProducts.value.map(p => p.name)
+
+    generatingStep.value = 'recipe'
     const result = await $fetch<Recipe>('/api/generate-recipe', {
       method: 'POST',
       body: { products: productNames },
     })
     recipe.value = result
-    const imgPrompt = encodeURIComponent(`${result.title} kecskesajtos fogás ételfotó fehér tányéron`)
-    imageUrl.value = `https://image.pollinations.ai/prompt/${imgPrompt}?width=800&height=500&nologo=true&seed=${Date.now()}`
+
+    generatingStep.value = 'image'
+    const imageResult = await $fetch<{ url: string }>('/api/generate-recipe-image', {
+      method: 'POST',
+      body: { recipeTitle: result.title },
+    })
+    imageUrl.value = imageResult.url
   } catch {
     error.value = 'Nem sikerült generálni a receptet. Kérjük, próbáld újra.'
   } finally {
     isGenerating.value = false
+    generatingStep.value = null
   }
 }
+
+const loadingText = computed(() => {
+  if (generatingStep.value === 'recipe') return 'Recept generálása...'
+  if (generatingStep.value === 'image') return 'Ételfotó készítése...'
+  return 'Generálás...'
+})
 </script>
 
 <template>
@@ -107,30 +121,17 @@ async function generateRecipe() {
           :key="product.id"
           class="relative rounded-2xl border-2 overflow-hidden text-left transition-all duration-200 active:scale-[0.98]"
           :class="[
-            isSelected(product.id)
-              ? 'border-green-600 shadow-md'
-              : 'border-gray-100 shadow-sm',
-            isDisabled(product.id)
-              ? 'opacity-40 cursor-not-allowed'
-              : 'hover:shadow-md cursor-pointer',
+            isSelected(product.id) ? 'border-green-600 shadow-md' : 'border-gray-100 shadow-sm',
+            isDisabled(product.id) ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md cursor-pointer',
           ]"
           :disabled="isDisabled(product.id)"
           @click="toggleProduct(product.id)"
         >
-          <!-- Product image -->
           <div class="w-full h-36 overflow-hidden bg-green-50">
-            <img
-              :src="product.image"
-              :alt="product.name"
-              class="w-full h-full object-cover"
-            />
+            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
           </div>
 
-          <!-- Selected overlay -->
-          <div
-            v-if="isSelected(product.id)"
-            class="absolute top-2 right-2 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center"
-          >
+          <div v-if="isSelected(product.id)" class="absolute top-2 right-2 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
             <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
@@ -154,7 +155,7 @@ async function generateRecipe() {
       >
         <span v-if="isGenerating" class="flex items-center justify-center gap-2">
           <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          Recept generálása...
+          {{ loadingText }}
         </span>
         <span v-else>Recept generálása</span>
       </button>
@@ -168,57 +169,38 @@ async function generateRecipe() {
       <Transition name="slide-down">
         <div v-if="recipe" class="mt-6">
           <!-- Food image -->
-          <div class="w-full rounded-2xl overflow-hidden bg-gray-100 mb-5" style="aspect-ratio: 16/9">
-            <div v-if="!imageLoaded" class="w-full h-full animate-pulse bg-gray-200" />
+          <div class="w-full rounded-2xl overflow-hidden mb-5" style="aspect-ratio: 16/9">
+            <div v-if="!imageUrl || !imageLoaded" class="w-full h-full bg-gray-100 animate-pulse rounded-2xl" />
             <img
               v-if="imageUrl"
               :src="imageUrl"
               :alt="recipe.title"
-              class="w-full h-full object-cover"
-              :class="imageLoaded ? 'opacity-100' : 'opacity-0 absolute'"
+              class="w-full h-full object-cover transition-opacity duration-500"
+              :class="imageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'"
               @load="imageLoaded = true"
             />
           </div>
 
-          <!-- Recipe content -->
           <h2 class="text-xl font-bold text-gray-900 mb-2">{{ recipe.title }}</h2>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">{{ recipe.description }}</p>
-
-          <!-- Ingredients -->
-          <div class="mb-5">
-            <h3 class="text-base font-semibold text-gray-800 mb-3">Hozzávalók</h3>
-            <ul class="space-y-2">
-              <li
-                v-for="(ingredient, i) in recipe.ingredients"
-                :key="i"
-                class="flex items-start gap-2 text-sm text-gray-700"
-              >
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
-                {{ ingredient }}
-              </li>
-            </ul>
-          </div>
+          <p class="text-gray-600 text-sm leading-relaxed mb-6">{{ recipe.description }}</p>
 
           <!-- Steps -->
-          <div>
-            <h3 class="text-base font-semibold text-gray-800 mb-3">Elkészítés</h3>
-            <ol class="space-y-3">
-              <li
-                v-for="(step, i) in recipe.steps"
-                :key="i"
-                class="flex items-start gap-3"
-              >
-                <span class="w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                  {{ i + 1 }}
-                </span>
-                <p class="text-sm text-gray-700 leading-relaxed">{{ step }}</p>
-              </li>
-            </ol>
-          </div>
+          <h3 class="text-base font-semibold text-gray-800 mb-3">Elkészítés</h3>
+          <ol class="space-y-3 mb-8">
+            <li
+              v-for="(step, i) in recipe.steps"
+              :key="i"
+              class="flex items-start gap-3"
+            >
+              <span class="w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                {{ i + 1 }}
+              </span>
+              <p class="text-sm text-gray-700 leading-relaxed">{{ step }}</p>
+            </li>
+          </ol>
 
-          <!-- Generate again -->
           <button
-            class="mt-8 w-full py-3 rounded-xl border border-green-600 text-green-600 font-semibold text-sm hover:bg-green-50 transition-colors"
+            class="w-full py-3 rounded-xl border border-green-600 text-green-600 font-semibold text-sm hover:bg-green-50 transition-colors"
             @click="generateRecipe"
           >
             Új recept generálása

@@ -1,40 +1,73 @@
+import { z } from 'zod'
+
+const requestSchema = z.object({
+  products: z.array(z.string()).min(1),
+})
+
+interface GeneratedRecipe {
+  title: string
+  description: string
+  steps: string[]
+}
+
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const { products } = body as { products: string[] }
-
   const config = useRuntimeConfig()
-  const apiKey = config.geminiApiKey
 
-  if (!apiKey) {
-    throw createError({ statusCode: 500, statusMessage: 'Gemini API key not configured' })
+  if (!config.openaiApiKey) {
+    throw createError({ statusCode: 500, message: 'OpenAI API key is not configured' })
   }
+
+  const body = await readBody(event)
+  const { products } = requestSchema.parse(body)
 
   const prompt = `Generálj egy kreatív kecskesajtos receptet magyarul a következő kecskesajt típusokkal: ${products.join(', ')}.
-Válaszolj KIZÁRÓLAG valid JSON formátumban, semmi más szöveget ne írj:
+
+Válaszolj PONTOSAN ebben a JSON formátumban:
 {
-  "title": "recept neve",
+  "title": "Recept neve",
   "description": "2-3 mondatos vonzó leírás",
-  "ingredients": ["hozzávaló 1 mennyiséggel", "hozzávaló 2 mennyiséggel"],
-  "steps": ["1. lépés részletes leírása", "2. lépés részletes leírása"]
+  "steps": [
+    "Első lépés leírása",
+    "Második lépés leírása"
+  ]
 }`
 
-  const response = await $fetch<any>(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      body: {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 1024 },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.openaiApiKey}`,
       },
-    },
-  )
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'Te egy magyar szakács asszisztens vagy, aki kézműves kecskesajtos receptekre specializálódott. Mindig pontosan a megadott JSON formátumban válaszolj, semmi mást ne írj.',
+          },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.8,
+        response_format: { type: 'json_object' },
+      }),
+    })
 
-  const text: string = response?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+    if (!response.ok) {
+      const error = await response.json()
+      throw createError({ statusCode: response.status, message: error.error?.message || 'OpenAI API error' })
+    }
 
-  const jsonMatch = text.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) {
-    throw createError({ statusCode: 500, statusMessage: 'Invalid AI response' })
+    const data = await response.json()
+    const content = data.choices[0]?.message?.content
+
+    if (!content) {
+      throw createError({ statusCode: 500, message: 'No response from OpenAI' })
+    }
+
+    return JSON.parse(content) as GeneratedRecipe
+  } catch (error: any) {
+    if (error.statusCode) throw error
+    throw createError({ statusCode: 500, message: 'Failed to generate recipe' })
   }
-
-  return JSON.parse(jsonMatch[0])
 })
