@@ -91,10 +91,7 @@ async function payWithBarion() {
           <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           Átirányítás...
         </span>
-        <span v-else class="flex items-center gap-3">
-          <span>Fizetés Barionnal</span>
-          <img src="/pictures/barion-card.svg" class="h-5" alt="Barion" onerror="this.style.display='none'" />
-        </span>
+        <span v-else>Fizetés Barionnal</span>
       </button>
 
       <p class="text-center text-xs text-gray-400 mt-3">
