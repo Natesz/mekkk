@@ -139,7 +139,6 @@ const loadingText = computed(() => {
 
           <div class="px-3 py-2">
             <p class="font-semibold text-gray-900 text-sm leading-snug">{{ product.name }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">{{ product.label }}</p>
           </div>
         </button>
       </div>

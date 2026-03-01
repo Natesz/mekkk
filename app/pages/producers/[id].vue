@@ -132,4 +132,7 @@ useHead({
 
   <!-- Fixed order bar -->
   <OrderBar />
+
+  <!-- Order review drawer -->
+  <RendelesedDrawer />
 </template>

@@ -9,7 +9,7 @@ const quantity = computed(() => cartStore.getQuantity(props.product.id))
 const direction = ref<'up' | 'down'>('up')
 
 onMounted(() => {
-  cartStore.registerPrice(props.product.id, props.product.price)
+  cartStore.registerProduct(props.product.id, props.product.name, props.product.price, props.product.image)
 })
 
 function handleIncrement() {

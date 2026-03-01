@@ -95,6 +95,18 @@
 - `server/api/generate-recipe.post.ts` – ÚJ: Nuxt server route; Gemini 1.5 Flash API hívás; JSON prompt magyar recept generáláshoz; JSON parsing + error handling
 - `app/pages/ai-receptek.vue` – teljes implementáció: termékválasztó grid (max 3, highlight, disabled state); "Recept generálása" gomb (disabled 0 kiválasztásnál); loading spinner; Gemini recept + Pollinations.ai ételfotó; recept kártya (cím, leírás, hozzávalók, lépések); "Új recept" gomb
 
+## Iteráció 7 – Rendelésed flow (PRD 07)
+
+- `app/stores/cart.ts` – `productDetails` (name/image/price) + `orderedItems` computed + `note` + `rendelesedOpen` + `removeProduct` + `registerProduct` hozzáadva; `registerPrice` eltávolítva
+- `app/components/producers/ProductOrderCard.vue` – `registerPrice` → `registerProduct(id, name, price, image)` (teljes termékadat regisztrálás mount-kor)
+- `app/components/producers/OrderBar.vue` – gombra kattintás `cartStore.rendelesedOpen = true`-t állít
+- `app/components/producers/MegjegyzesModal.vue` – ÚJ: teljes képernyős megjegyzés modal; slide-right belépés (z-60); vissza nyíl (menti a megjegyzést) + X gomb (mindent bezár); textarea; Kész gomb
+- `app/components/producers/RendelesedDrawer.vue` – ÚJ: Teleport overlay; mobil: teljes képernyő, desktop: `md:w-1/4` jobb oldali panel; fade backdrop; terméklista expandálható mennyiség badge-dzsel (−|szám|+|kuka); üres állapot szöveg; megjegyzés sor; Pénztárhoz / Tételek hozzáadása gomb
+- `app/pages/producers/[id].vue` – `<RendelesedDrawer />` hozzáadva
+- `app/pages/penztar.vue` – ÚJ: placeholder oldal breadcrumbs navigációval + "hamarosan elérhető" szöveggel
+- `app/pages/ai-receptek.vue` – termék kártyákról `product.label` felirat eltávolítva
+- `app/assets/css/main.css` – `slide-right` Transition animáció hozzáadva (DrawerDrawer + MegjegyzesModal használja)
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->
