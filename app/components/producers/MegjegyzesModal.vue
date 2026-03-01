@@ -25,11 +25,12 @@ function closeAll() {
 </script>
 
 <template>
-  <Transition name="slide-right">
-    <div
-      v-if="open"
-      class="fixed inset-0 bg-white z-60 flex flex-col"
-    >
+  <Teleport to="body">
+    <Transition name="slide-right">
+      <div
+        v-if="open"
+        class="fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-1/4 bg-white z-[70] flex flex-col"
+      >
       <!-- Top bar -->
       <div class="flex items-center justify-between px-4 pt-4 pb-2 flex-shrink-0">
         <button
@@ -76,6 +77,7 @@ function closeAll() {
           Kész
         </button>
       </div>
-    </div>
-  </Transition>
+      </div>
+    </Transition>
+  </Teleport>
 </template>

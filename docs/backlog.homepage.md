@@ -107,6 +107,18 @@
 - `app/pages/ai-receptek.vue` – termék kártyákról `product.label` felirat eltávolítva
 - `app/assets/css/main.css` – `slide-right` Transition animáció hozzáadva (DrawerDrawer + MegjegyzesModal használja)
 
+## Iteráció 8 – Barion fizetés + AI receptek grid + Megjegyzések modal fix (PRD 08)
+
+- `nuxt.config.ts` – Barion privát runtimeConfig kulcsok hozzáadva (`barionPosKey`, `barionPayeeEmail`, `barionWebhookUrl`, `barionRedirectUrl`, `barionApiBase`); `process.env.BARION_*` fallback-kel (nem kell NUXT_ prefix)
+- `server/api/barion-start.post.ts` – ÚJ: fizetés indítása; Zod validáció; HUF összeg; Barion `/v2/Payment/Start` hívás; `gatewayUrl` visszaadás
+- `server/api/barion-webhook.post.ts` – ÚJ: Barion callback handler; `GetPaymentState` lekérdezés; HTTP 200 kötelező visszaadás
+- `app/pages/penztar.vue` – teljes checkout oldal: rendelés összesítő kártyák (kép + db × ár), megjegyzés preview, összeg, „Fizetés Barionnal" gomb → redirect Barion oldalára; üres kosár esetén redirect vissza
+- `app/pages/penztar/visszaigazolas.vue` – ÚJ: visszaérkezés Barion-ról; cart reset; paymentId megjelenítés; vissza a főoldalra gomb
+- `app/pages/producers/[id].vue` – `onUnmounted` cart reset eltávolítva (cart megmarad /penztar-ra navigáláskor; következő termelő látogatáskor `onMounted` reseteli)
+- `app/pages/ai-receptek.vue` – `grid-cols-3` mobilon (volt: `grid-cols-1`); `gap-2`; képek `h-20 sm:h-28 lg:h-36`; szöveg `text-xs sm:text-sm`; checkmark badge kisebb (`w-5 h-5`)
+- `app/components/producers/MegjegyzesModal.vue` – `<Teleport to="body">` wrapper hozzáadva (kilép a drawer stacking context-ből); `z-[70]` (drawer z-50 fölé); desktopon `md:right-0 md:left-auto md:w-1/4` (drawer-en belül marad, nem takarja el a főoldalt)
+- `docs/barion-setup.md` – ÚJ: teljes Barion integráció dokumentáció (regisztráció, kulcsok, flow, API referencia, tesztkártyák)
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->

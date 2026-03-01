@@ -16,7 +16,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  cartStore.reset()
+  // Cart is reset on next producer page visit (onMounted), not here,
+  // so the data persists when navigating to /penztar
 })
 
 useHead({

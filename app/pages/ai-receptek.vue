@@ -114,7 +114,7 @@ const loadingText = computed(() => {
 
       <div
         v-else
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6"
+        class="grid grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4"
       >
         <button
           v-for="product in products"
@@ -127,18 +127,18 @@ const loadingText = computed(() => {
           :disabled="isDisabled(product.id)"
           @click="toggleProduct(product.id)"
         >
-          <div class="w-full h-36 overflow-hidden bg-green-50">
+          <div class="w-full h-20 sm:h-28 lg:h-36 overflow-hidden bg-green-50">
             <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
           </div>
 
-          <div v-if="isSelected(product.id)" class="absolute top-2 right-2 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <div v-if="isSelected(product.id)" class="absolute top-1.5 right-1.5 w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
+            <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
 
-          <div class="px-3 py-2">
-            <p class="font-semibold text-gray-900 text-sm leading-snug">{{ product.name }}</p>
+          <div class="px-2 py-1.5 sm:px-3 sm:py-2">
+            <p class="font-semibold text-gray-900 text-xs sm:text-sm leading-snug line-clamp-2">{{ product.name }}</p>
           </div>
         </button>
       </div>
