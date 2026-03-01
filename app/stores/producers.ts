@@ -99,12 +99,33 @@ export const useProducersStore = defineStore('producers', () => {
     }
   }
 
+  async function fetchAll() {
+    loading.value = true
+    currentProducers.value = []
+    const supabase = useSupabase()
+    const { data, error } = await supabase
+      .from('producers')
+      .select('id, name, image, rating, review_count, delivery_minutes, address')
+    if (!error && data) {
+      currentProducers.value = data.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        image: row.image ?? '',
+        rating: row.rating,
+        reviewCount: row.review_count,
+        deliveryMinutes: row.delivery_minutes,
+        address: row.address,
+      }))
+    }
+    loading.value = false
+  }
+
   function clearCurrentProducers() {
     currentProducers.value = []
   }
 
   return {
     currentProducers, currentProducer, otherProducts, loading,
-    fetchByProductId, fetchById, clearCurrentProducers,
+    fetchByProductId, fetchById, fetchAll, clearCurrentProducers,
   }
 })

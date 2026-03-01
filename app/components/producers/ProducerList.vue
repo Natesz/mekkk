@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="px-4">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between md:justify-start md:gap-4 mb-4">
       <p class="text-sm text-gray-700">
         <span class="font-semibold">{{ producers.length }}</span> találat
       </p>
@@ -27,7 +27,7 @@ const emit = defineEmits<{
     <TransitionGroup
       name="producer-list"
       tag="div"
-      class="flex flex-col gap-4"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
     >
       <ProducerCard
         v-for="producer in producers"

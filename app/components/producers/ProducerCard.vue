@@ -9,13 +9,13 @@ defineProps<{
 <template>
   <NuxtLink
     :to="`/producers/${producer.id}`"
-    class="block w-[90%] mx-auto rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 active:scale-[0.99]"
+    class="block rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 active:scale-[0.99]"
   >
     <div class="w-full h-44 overflow-hidden">
       <img
         :src="producer.image"
         :alt="producer.name"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover object-center sm:object-top"
       />
     </div>
     <div class="px-4 py-3">

@@ -6,37 +6,47 @@ const { products, selectedProductId, selectedProduct, loading: productsLoading }
 
 const {
   filter30min,
-  filterTopRating,
+  ratingThreshold,
+  filterMostRatings,
   sortBy,
   sortingSheetOpen,
+  ratingSheetOpen,
+  ratingLabel,
   applyFilters,
   reset: resetFilters,
 } = useProducerFilters()
 
 const visibleProducers = computed(() => applyFilters(producersStore.currentProducers))
 
-onMounted(() => {
+onMounted(async () => {
   productsStore.fetchProducts()
+  await producersStore.fetchAll()
 })
 
 async function handleSelectProduct(id: string) {
-  productsStore.selectProduct(id)
+  if (productsStore.selectedProductId === id) {
+    productsStore.resetSelection()
+    resetFilters()
+    await producersStore.fetchAll()
+  } else {
+    productsStore.selectProduct(id)
+    resetFilters()
+    await producersStore.fetchByProductId(id)
+  }
+}
+
+async function handleReset() {
+  productsStore.resetSelection()
   resetFilters()
-  await producersStore.fetchByProductId(id)
+  await producersStore.fetchAll()
 }
 
 function toggle30min() {
   filter30min.value = !filter30min.value
 }
 
-function toggleTopRating() {
-  filterTopRating.value = !filterTopRating.value
-}
-
-function handleReset() {
-  productsStore.resetSelection()
-  producersStore.clearCurrentProducers()
-  resetFilters()
+function toggleMostRatings() {
+  filterMostRatings.value = !filterMostRatings.value
 }
 
 function handleApplySort(sort: 'rating' | 'arrival' | null) {
@@ -47,6 +57,16 @@ function handleApplySort(sort: 'rating' | 'arrival' | null) {
 function handleResetSort() {
   sortBy.value = null
   sortingSheetOpen.value = false
+}
+
+function handleApplyRating(threshold: number) {
+  ratingThreshold.value = threshold
+  ratingSheetOpen.value = false
+}
+
+function handleResetRating() {
+  ratingThreshold.value = null
+  ratingSheetOpen.value = false
 }
 </script>
 
@@ -67,31 +87,30 @@ function handleResetSort() {
         />
       </section>
 
-      <Transition name="slide-down">
-        <section v-if="selectedProduct" class="mt-3">
-          <FilterRow
-            :filter30min="filter30min"
-            :filter-top-rating="filterTopRating"
-            :sort-by="sortBy"
-            @toggle30min="toggle30min"
-            @toggle-top-rating="toggleTopRating"
-            @open-sorting="sortingSheetOpen = true"
-          />
-        </section>
-      </Transition>
+      <section class="mt-3">
+        <FilterRow
+          :filter30min="filter30min"
+          :rating-threshold="ratingThreshold"
+          :rating-label="ratingLabel"
+          :filter-most-ratings="filterMostRatings"
+          :sort-by="sortBy"
+          @toggle30min="toggle30min"
+          @open-rating="ratingSheetOpen = true"
+          @toggle-most-ratings="toggleMostRatings"
+          @open-sorting="sortingSheetOpen = true"
+        />
+      </section>
 
-      <Transition name="slide-down">
-        <section v-if="selectedProduct" class="mt-4 pb-8">
-          <div v-if="producersStore.loading" class="flex justify-center py-8">
-            <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
-          </div>
-          <ProducerList
-            v-else
-            :producers="visibleProducers"
-            @reset="handleReset"
-          />
-        </section>
-      </Transition>
+      <section class="mt-4 pb-8">
+        <div v-if="producersStore.loading" class="flex justify-center py-8">
+          <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+        <ProducerList
+          v-else
+          :producers="visibleProducers"
+          @reset="handleReset"
+        />
+      </section>
     </main>
 
     <SortingBottomSheet
@@ -100,6 +119,14 @@ function handleResetSort() {
       @apply="handleApplySort"
       @reset="handleResetSort"
       @close="sortingSheetOpen = false"
+    />
+
+    <RatingBottomSheet
+      :open="ratingSheetOpen"
+      :current-threshold="ratingThreshold"
+      @apply="handleApplyRating"
+      @reset="handleResetRating"
+      @close="ratingSheetOpen = false"
     />
   </div>
 </template>

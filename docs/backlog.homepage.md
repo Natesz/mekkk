@@ -80,6 +80,21 @@
 - `app/components/HamburgerMenu.vue` – "AI receptek" menüpont hozzáadva (zöld, nagyobb betű, AI ikon, elválasztóval)
 - `app/pages/ai-receptek.vue` – placeholder oldal AI ikon fejléccel, skeleton kártyák, "fejlesztés alatt" banner
 
+## Iteráció 6 – Desktop reszponzivitás, rating szűrők, AI receptek (PRD 06)
+
+- `nuxt.config.ts` – `runtimeConfig.geminiApiKey` (privát) hozzáadva
+- `.env` – `NUXT_GEMINI_API_KEY` placeholder hozzáadva (Google AI Studio free tier)
+- `app/stores/producers.ts` – `fetchAll()` hozzáadva: termékszűrő nélküli teljes termelőlista
+- `app/composables/useProducerFilters.ts` – `filterTopRating` helyett `ratingThreshold: number | null` + `filterMostRatings: boolean` + `ratingSheetOpen`; `ratingLabel` computed; `applyFilters` frissítve (threshold + 100+ értékelés szűrő)
+- `app/components/producers/RatingBottomSheet.vue` – ÚJ: bottom sheet slider modal; 5 fokozat (3, 3,5, 4, 4,5, 5); Alkalmaz/Visszaállít gombok; SortingBottomSheet-tel egyező stílus
+- `app/components/producers/FilterRow.vue` – "Legmagasabb értékelés" → "Értékelés ▾" dropdown; "Legtöbb értékelés" toggle gomb hozzáadva; props/emits frissítve
+- `app/components/producers/ProducerList.vue` – `flex flex-col` → `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`; Visszaállítás gomb desktopon a számláló mellé igazítva (`md:justify-start`)
+- `app/components/producers/ProducerCard.vue` – `w-[90%] mx-auto` eltávolítva (grid kompatibilitás); `sm:object-top` a kép teteje nem kerül levágásra desktopon
+- `app/pages/index.vue` – termelők auto-betöltése mountkor; product toggle (ugyanarra kattintás = deselect + fetchAll); FilterRow/ProducerList mindig látható (v-if eltávolítva); RatingBottomSheet integrálva
+- `app/pages/producers/[id].vue` – popular + other products `flex flex-col` → `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`
+- `server/api/generate-recipe.post.ts` – ÚJ: Nuxt server route; Gemini 1.5 Flash API hívás; JSON prompt magyar recept generáláshoz; JSON parsing + error handling
+- `app/pages/ai-receptek.vue` – teljes implementáció: termékválasztó grid (max 3, highlight, disabled state); "Recept generálása" gomb (disabled 0 kiválasztásnál); loading spinner; Gemini recept + Pollinations.ai ételfotó; recept kártya (cím, leírás, hozzávalók, lépések); "Új recept" gomb
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->

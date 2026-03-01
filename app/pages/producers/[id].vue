@@ -90,7 +90,7 @@ useHead({
       <!-- Most ordered products -->
       <div v-if="producer.popularProducts?.length" class="px-4 pb-4">
         <h2 class="text-base font-semibold text-gray-800 mb-2">Legtöbbet rendeltek</h2>
-        <div class="flex flex-col">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <ProductOrderCard
             v-for="product in producer.popularProducts"
             :key="product.id"
@@ -103,7 +103,7 @@ useHead({
       <!-- Other products -->
       <div v-if="otherProducts.length" class="px-4 pb-10">
         <h2 class="text-base font-semibold text-gray-800 mb-2 mt-2">További termékek</h2>
-        <div class="flex flex-col">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <ProductOrderCard
             v-for="product in otherProducts"
             :key="product.id"
