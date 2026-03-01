@@ -14,9 +14,6 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components', pathPrefix: false },
   ],
-  nitro: {
-    preset: 'vercel',
-  },
   app: {
     head: {
       title: 'MEKKK',
