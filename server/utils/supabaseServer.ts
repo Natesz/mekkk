@@ -6,6 +6,6 @@ export function useSupabaseServer(): SupabaseClient {
   const key = (config.supabaseServiceRoleKey as string)
     || process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY
     || process.env.SUPABASE_SERVICE_ROLE_KEY
-    || ''
+    || (config.public.supabaseAnonKey as string)
   return createClient(url, key)
 }

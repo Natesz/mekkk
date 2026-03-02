@@ -37,7 +37,10 @@ ALTER TABLE orders         ENABLE ROW LEVEL SECURITY;
 -- Public read for orders (korabbi-rendeleseim page uses anon key)
 CREATE POLICY "public read orders" ON orders FOR SELECT USING (true);
 
--- pending_orders: no public access (service_role bypasses RLS for INSERT/DELETE)
+-- Server route INSERT/DELETE (anon key used from trusted server routes)
+CREATE POLICY "anon insert orders"         ON orders         FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY "anon insert pending_orders" ON pending_orders FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY "anon delete pending_orders" ON pending_orders FOR DELETE TO anon USING (true);
 
 -- ── Fix typo in existing data ─────────────────────────────────────────────────
 
