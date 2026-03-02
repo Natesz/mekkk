@@ -22,18 +22,38 @@ export default defineEventHandler(async (event) => {
         .eq('payment_id', paymentId)
         .single()
 
-      if (pending) {
-        const customerName = state.Transactions?.[0]?.Payer?.Name ?? null
+      const customerName = state.Transactions?.[0]?.Payer?.Name ?? null
 
-        await supabase.from('orders').insert({
-          producer_id: pending.producer_id,
-          producer_name: pending.producer_name,
-          total_amount: pending.total_amount,
-          items: pending.items,
-          customer_name: customerName,
-        })
+      // Ha pending_orders-ben megvan az adat, azt használjuk
+      // Ha nem (pl. insert korábban elbukott), a Barion state-ből rekonstruálunk
+      const orderData = pending
+        ? {
+            producer_id: pending.producer_id,
+            producer_name: pending.producer_name,
+            total_amount: pending.total_amount,
+            items: pending.items,
+            customer_name: customerName,
+          }
+        : {
+            producer_id: null,
+            producer_name: null,
+            total_amount: state.Total ?? state.Transactions?.[0]?.Total ?? 0,
+            items: (state.Transactions?.[0]?.Items ?? []).map((i: any) => ({
+              name: i.Name,
+              quantity: i.Quantity,
+              unitPrice: i.UnitPrice,
+            })),
+            customer_name: customerName,
+          }
 
-        await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
+      const { error: insertErr } = await supabase.from('orders').insert(orderData)
+      if (insertErr) {
+        console.error('[Barion webhook] orders insert:', insertErr.message)
+      } else {
+        if (pending) {
+          await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
+        }
+        console.log(`[Barion] order saved for paymentId ${paymentId}`)
       }
     }
   } catch (e) {
