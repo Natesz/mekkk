@@ -2,8 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 export function useSupabaseServer(): SupabaseClient {
   const config = useRuntimeConfig()
-  return createClient(
-    config.public.supabaseUrl as string,
-    config.supabaseServiceRoleKey as string,
-  )
+  const url = config.public.supabaseUrl as string
+  const key = (config.supabaseServiceRoleKey as string) || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  return createClient(url, key)
 }
