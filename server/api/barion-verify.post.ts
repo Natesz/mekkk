@@ -8,18 +8,29 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'paymentId hiányzik' })
   }
 
-  // Barion státusz lekérdezés
-  const state = await $fetch<any>(
-    `${config.barionApiBase}/v2/Payment/GetPaymentState?paymentId=${paymentId}`,
-    { headers: { 'x-pos-key': config.barionPosKey } },
-  )
+  // ── Barion státusz lekérdezés ─────────────────────────────────────────────
+  let state: any
+  try {
+    state = await $fetch<any>(
+      `${config.barionApiBase}/v2/Payment/GetPaymentState?paymentId=${paymentId}`,
+      { headers: { 'x-pos-key': config.barionPosKey } },
+    )
+  } catch (e: any) {
+    console.error('[barion-verify] GetPaymentState hiba:', e?.message ?? e)
+    console.error('[barion-verify] barionApiBase:', config.barionApiBase)
+    console.error('[barion-verify] barionPosKey set:', !!config.barionPosKey)
+    throw createError({ statusCode: 502, message: 'Barion státusz lekérdezés sikertelen' })
+  }
+
+  console.log(`[barion-verify] paymentId=${paymentId} status=${state.Status}`)
 
   if (state.Status !== 'Succeeded') {
     return { succeeded: false, status: state.Status }
   }
 
-  // Duplikátum védelem: már be van-e mentve ez a payment?
+  // ── Duplikátum védelem ────────────────────────────────────────────────────
   const supabase = useSupabaseServer()
+
   const { data: existing } = await supabase
     .from('orders')
     .select('id')
@@ -30,7 +41,7 @@ export default defineEventHandler(async (event) => {
     return { succeeded: true, alreadySaved: true }
   }
 
-  // pending_orders-ből vesszük az adatokat (barion-start mentette)
+  // ── pending_orders alapján vagy Barion state-ből rekonstruálva ────────────
   const { data: pending } = await supabase
     .from('pending_orders')
     .select('*')
@@ -63,7 +74,7 @@ export default defineEventHandler(async (event) => {
 
   const { error } = await supabase.from('orders').insert(orderData)
   if (error) {
-    console.error('[barion-verify] orders insert:', error.message)
+    console.error('[barion-verify] orders insert hiba:', error.message)
     throw createError({ statusCode: 500, message: 'Rendelés mentése sikertelen' })
   }
 

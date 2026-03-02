@@ -7,6 +7,7 @@ const paymentId = route.query.paymentId as string | undefined
 
 const verifying = ref(true)
 const succeeded = ref(false)
+const verifyError = ref(false)
 
 onMounted(async () => {
   cartStore.reset()
@@ -23,7 +24,7 @@ onMounted(async () => {
     })
     succeeded.value = result.succeeded
   } catch {
-    succeeded.value = false
+    verifyError.value = true
   } finally {
     verifying.value = false
   }
@@ -57,6 +58,19 @@ onMounted(async () => {
           Azonosító: {{ paymentId }}
         </p>
         <div v-else class="mb-8" />
+      </template>
+
+      <!-- Verify error (server/network hiba) -->
+      <template v-else-if="verifyError">
+        <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
+          <svg class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Köszönjük a rendelést!</h1>
+        <p class="text-sm text-gray-500 leading-relaxed mb-8">
+          A fizetésed sikeresen megtörtént. Rendelésedet hamarosan visszaigazoljuk.
+        </p>
       </template>
 
       <!-- Failed -->
