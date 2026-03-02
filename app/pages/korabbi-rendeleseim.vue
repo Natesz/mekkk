@@ -90,7 +90,7 @@ function formatDate(iso: string): string {
           <!-- Timestamp + total -->
           <div class="flex items-center justify-between mt-2">
             <span class="text-xs text-gray-400">{{ formatDate(order.created_at) }}</span>
-            <span class="text-sm font-bold text-gray-900">
+            <span class="text-sm font-bold text-green-600">
               {{ order.total_amount.toLocaleString('hu-HU') }} Ft
             </span>
           </div>

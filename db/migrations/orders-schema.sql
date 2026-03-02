@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS pending_orders (
 -- orders: confirmed, persisted orders after successful Barion payment.
 CREATE TABLE IF NOT EXISTS orders (
   id            UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  payment_id    TEXT        UNIQUE,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   producer_id   TEXT,
   producer_name TEXT,
@@ -24,6 +25,9 @@ CREATE TABLE IF NOT EXISTS orders (
   items         JSONB       NOT NULL,
   customer_name TEXT
 );
+
+-- Ha a tábla már létezik (korábbi migráció), add hozzá a payment_id oszlopot:
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_id TEXT UNIQUE;
 
 -- ── Row Level Security ────────────────────────────────────────────────────────
 
