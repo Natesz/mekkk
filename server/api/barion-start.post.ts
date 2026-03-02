@@ -60,14 +60,20 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: res.Errors[0].Description ?? 'Barion hiba' })
   }
 
-  const supabase = useSupabaseServer()
-  await supabase.from('pending_orders').insert({
-    payment_id: res.PaymentId,
-    producer_id: body.producerId ?? null,
-    producer_name: body.producerName ?? null,
-    total_amount: body.total,
-    items: body.items,
-  })
+  try {
+    const supabase = useSupabaseServer()
+    const { error: dbErr } = await supabase.from('pending_orders').insert({
+      payment_id: res.PaymentId,
+      producer_id: body.producerId ?? null,
+      producer_name: body.producerName ?? null,
+      total_amount: body.total,
+      items: body.items,
+    })
+    if (dbErr) console.error('[barion-start] pending_orders insert:', dbErr.message)
+  } catch (e) {
+    console.error('[barion-start] pending_orders error:', e)
+    // Ne blokkoljuk a fizetési átirányítást DB-hiba esetén
+  }
 
   return { gatewayUrl: res.GatewayUrl, paymentId: res.PaymentId }
 })

@@ -24,10 +24,11 @@ export default defineEventHandler(async (event) => {
         Authorization: `Bearer ${config.openaiApiKey}`,
       },
       body: JSON.stringify({
-        model: 'dall-e-2',
+        model: 'dall-e-3',
         prompt,
         n: 1,
-        size: '512x512',
+        size: '1024x1024',
+        quality: 'standard',
         response_format: 'url',
       }),
     })

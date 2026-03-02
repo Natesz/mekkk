@@ -1,24 +1,54 @@
 # MEKKK – Kézműves kecskesajt platform
 
-Nuxt 4 + Tailwind CSS + Pinia + Supabase alapú mobil-first webapp.
+A MEKKK egy mobil-first webalkalmazás, amely összehozza a kézműves kecskesajt termelőket a vásárlókkal. A platform lehetővé teszi a termelők böngészését, termékek kosárba helyezését, biztonságos online fizetést, és mesterséges intelligencia alapú receptajánlóval segíti a vásárlási döntést.
 
-## Stack
+---
 
+## Mit tud a platform?
+
+### Termelők böngészése
+- A főoldalon böngészheted az összes kézműves termelőt
+- Szűrés és rendezés: gyors kiszállítás, legmagasabb értékelés
+- Minden termelőnek saját oldala van: termékek, árak, szállítási idő
+
+### Rendelés és fizetés
+- Termékeket adhatsz a kosárhoz közvetlenül a termelő oldalán
+- Megjegyzést fűzhetsz a rendeléshez (pl. különleges kérések)
+- Biztonságos online fizetés **Barion** rendszeren keresztül
+- A sikeres fizetés után a rendelés automatikusan mentődik
+
+### Korábbi rendelések
+- A fejléc jobb oldalán a profilikon megnyitja a rendelési előzményeket
+- Látod az összes korábbi rendelést: termelő neve, dátum, végösszeg
+
+### AI receptajánló
+- Válassz 1–3 kecskesajt típust, és a mesterséges intelligencia egyedi receptet generál
+- A recept mellé ételfotó is készül automatikusan
+- Ha a képgenerálás nem sikerül, a recept szövege akkor is megjelenik
+
+---
+
+## Fejlesztőknek
+
+### Stack
 - **Nuxt 4** – file-based routing
 - **Tailwind CSS** – Tailwind-first styling, zöld branding
-- **Pinia** – state management (session memory, nincs localStorage)
+- **Pinia** – state management (session memory)
 - **Supabase** – adatbázis (PostgreSQL) + képtárolás (Storage)
-- **Zod** – form validáció (formokhoz bevezetve)
+- **Barion** – online fizetési integráció
+- **OpenAI** – GPT-4o-mini (receptszöveg) + DALL-E 3 (ételfotó)
+- **Zod** – validáció
 - **TypeScript** – strict mode
 
-## Környezeti változók
+### Környezeti változók
 
 ```bash
-cp .env.example .env
-# Töltsd ki NUXT_PUBLIC_SUPABASE_URL és NUXT_PUBLIC_SUPABASE_ANON_KEY értékeket
+cp .env .env.local
+# Szükséges kulcsok: NUXT_PUBLIC_SUPABASE_URL, NUXT_PUBLIC_SUPABASE_ANON_KEY,
+# NUXT_SUPABASE_SERVICE_ROLE_KEY, NUXT_OPENAI_API_KEY, BARION_POS_KEY, stb.
 ```
 
-## Fejlesztés
+### Fejlesztés
 
 ```bash
 npm install
@@ -27,50 +57,53 @@ npm run build     # production build
 npm run preview   # production preview
 ```
 
-## Adatbázis setup (egyszeri)
+### Adatbázis setup (egyszeri)
 
 ```bash
-# 1. Futtasd db/migrations/schema.sql tartalmát a Supabase SQL Editorban
-# 2. Seed + képfeltöltés:
-SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run migrate
+# 1. Futtasd a Supabase SQL Editorban:
+#    db/migrations/schema.sql          (alap táblák)
+#    db/migrations/orders-schema.sql   (rendelés táblák)
+
+# 2. Termelők és termékek feltöltése:
+node --env-file=.env db/migrations/populate.js
+
+# 3. Termelő képek frissítése (rand- képek):
+npm run upload-rand-images
 ```
 
-Részletes leírás: [`docs/supabase_use.md`](docs/supabase_use.md)
-
-## Funkciók
-
-### Iteráció 1 – Főoldal (kecskesajt áttekintő)
-- Termékkaruzel horizontálisan görgethető, körös képekkel
-- Termék kiválasztása animált sötétzöld kiemelést vált ki
-- Termelők listája megjelenik a kiválasztott termékhez
-- Termelő kártya: nagy kép, név, értékelés (zöld csillag), szállítási idő percben
-- Szűrők: „30 perc alatt", „Legmagasabb értékelés", „Rendezés" (bottom sheet)
-- Visszaállítás gomb törli a kiválasztást és a szűrőket
-- Termelő részletoldal: nagy kép, cím, szállítás/átvétel toggle, legtöbbet rendelt termékek
-
-### Iteráció 2 – Supabase backend
-- Minden adat Supabase PostgreSQL adatbázisból töltődik
-- Képek Supabase Storage-ban tárolódnak
-- Nincs localStorage, nincs browser-based perzisztencia
-- Reprodukálható adatbázis setup: `schema.sql` + `migrate.js`
-
-## Struktúra
+### Struktúra
 
 ```
 app/
-  pages/           # útvonalak
+  pages/           # útvonalak (főoldal, termelők, pénztár, AI receptek, rendeléseim)
   components/      # UI komponensek (products/, producers/)
   composables/     # useSupabase, useProducerFilters
-  stores/          # Pinia store-ok (async Supabase fetch)
+  stores/          # Pinia store-ok (cart, products, producers)
   types/           # TypeScript interfészek
-  assets/css/      # globális CSS (scrollbar-hide, transitions)
+  assets/css/      # globális CSS (animációk, transitions)
+server/
+  api/             # szerver route-ok (Barion, OpenAI)
+  utils/           # szerver segédeszközök (Supabase service_role kliens)
 db/
-  migrations/
-    schema.sql     # adatbázis séma (manuálisan futtatandó)
-    migrate.js     # seed + képfeltöltés script
+  migrations/      # SQL sémák + seed scriptek
 docs/
-  supabase_use.md  # Supabase integrációs dokumentáció
-  backlog.homepage.md
+  backlog.homepage.md   # fejlesztési napló iterációnként
+  barion-setup.md       # Barion integráció dokumentáció
+  supabase_use.md       # Supabase integráció dokumentáció
 public/
-  pictures/        # logo
+  pictures/        # logo + termékképek
 ```
+
+---
+
+## Funkciók összefoglalója
+
+| Funkció | Leírás |
+|---------|--------|
+| Termelők listája | Szűrhető, rendezhető kártya nézet |
+| Termelő részletoldal | Termékek, árak, kosárba helyezés |
+| Kosár és rendelés | Mennyiség állítás, megjegyzés |
+| Barion fizetés | Biztonságos online bankkártyás fizetés |
+| Rendelési előzmények | Korábbi rendelések listája (`/korabbi-rendeleseim`) |
+| AI receptajánló | GPT-4o-mini recept + DALL-E 3 ételfotó |
+| Mobil-first design | Optimalizált kisebb képernyőkre |
