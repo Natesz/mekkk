@@ -62,7 +62,7 @@ const PRODUCTS = [
   { id: 'garnela',     name: 'Garnélás kecskesajt',     label: 'garnélás',    file: 'garnela.jpg' },
   { id: 'hazi',        name: 'Házi kecskesajt',         label: 'házi',        file: 'hazi.jpg' },
   { id: 'kapros',      name: 'Kapros kecskesajt',       label: 'kapros',      file: 'kapros.jpg' },
-  { id: 'paradicsom',  name: 'Paradicsmos kecskesajt',  label: 'paradicsmos', file: 'paradicsom.jpg' },
+  { id: 'paradicsom',  name: 'Paradicsomos kecskesajt',  label: 'paradicsomos', file: 'paradicsom.jpg' },
   { id: 'sos',         name: 'Sós kecskesajt',          label: 'sós',         file: 'sos.jpg' },
   { id: 'spenot',      name: 'Spenótos kecskesajt',     label: 'spenótos',    file: 'spenot.jpg' },
 ]
@@ -127,7 +127,7 @@ const FIXED_PRODUCERS = [
     address: '2094 Nagykovácsi, Erdőszél dűlő 3.',
     productIds: ['borsos', 'csipos', 'fustolt', 'garnela', 'kapros', 'paradicsom', 'spenot'],
     popularProducts: [
-      { id: 'dominik-pp-1', name: 'Paradicsmos kecskesajt', price: 1490, description: 'Szárított paradicsommal',              productRef: 'paradicsom' },
+      { id: 'dominik-pp-1', name: 'Paradicsomos kecskesajt', price: 1490, description: 'Szárított paradicsommal',              productRef: 'paradicsom' },
       { id: 'dominik-pp-2', name: 'Garnélás kecskesajt',    price: 1890, description: 'Friss garnélával, enyhén sós',          productRef: 'garnela' },
       { id: 'dominik-pp-3', name: 'Kapros kecskesajt',      price: 1590, description: 'Klasszikus kapros recept',               productRef: 'kapros' },
     ],

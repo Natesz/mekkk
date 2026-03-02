@@ -9,6 +9,8 @@ export const useCartStore = defineStore('cart', () => {
   const productDetails = ref<Record<string, ProductDetail>>({})
   const note = ref('')
   const rendelesedOpen = ref(false)
+  const producerId = ref('')
+  const producerName = ref('')
 
   const totalItems = computed(() =>
     Object.values(counts.value).reduce((s, v) => s + v, 0),
@@ -58,16 +60,23 @@ export const useCartStore = defineStore('cart', () => {
     return counts.value[productId] ?? 0
   }
 
+  function setProducer(id: string, name: string) {
+    producerId.value = id
+    producerName.value = name
+  }
+
   function reset() {
     counts.value = {}
     productDetails.value = {}
     note.value = ''
     rendelesedOpen.value = false
+    producerId.value = ''
+    producerName.value = ''
   }
 
   return {
-    counts, productDetails, note, rendelesedOpen,
+    counts, productDetails, note, rendelesedOpen, producerId, producerName,
     totalItems, totalPrice, orderedItems,
-    registerProduct, increment, decrement, removeProduct, getQuantity, reset,
+    registerProduct, increment, decrement, removeProduct, getQuantity, setProducer, reset,
   }
 })

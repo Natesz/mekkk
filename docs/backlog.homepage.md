@@ -119,6 +119,26 @@
 - `app/components/producers/MegjegyzesModal.vue` – `<Teleport to="body">` wrapper hozzáadva (kilép a drawer stacking context-ből); `z-[70]` (drawer z-50 fölé); desktopon `md:right-0 md:left-auto md:w-1/4` (drawer-en belül marad, nem takarja el a főoldalt)
 - `docs/barion-setup.md` – ÚJ: teljes Barion integráció dokumentáció (regisztráció, kulcsok, flow, API referencia, tesztkártyák)
 
+## Iteráció 9 – AI képoptimalizálás, rendelések perzisztencia, rand- képek (PRD 09)
+
+- `server/api/generate-recipe-image.post.ts` – DALL-E 3 `1024x1024` → DALL-E 2 `512x512` (kisebb felbontás, gyorsabb mobilon)
+- `app/pages/ai-receptek.vue` – recept és kép generálás szétválasztva; kép-hiba esetén fallback: „A kép generálása nem sikerült, de a recept elkészült."; recept mindig megjelenik kép-hiba esetén is
+- `db/migrations/populate.js` – „paradicsmos" → „paradicsomos" typo javítva (name + label mezők)
+- `app/components/products/ProductCard.vue` – `max-w-[64px] truncate` → `max-w-[80px] break-words` (paradicsomos teljesen látható)
+- `db/migrations/orders-schema.sql` – ÚJ: `pending_orders` tábla (paymentId alapú, ideiglenes) + `orders` tábla (megerősített rendelések); RLS public SELECT orders-re; typo fix UPDATE products/popular_products
+- `nuxt.config.ts` – `supabaseServiceRoleKey` privát runtimeConfig hozzáadva
+- `.env` – `NUXT_SUPABASE_SERVICE_ROLE_KEY` hozzáadva (szerver oldali write-okhoz)
+- `server/utils/supabaseServer.ts` – ÚJ: service_role kulcsos Supabase kliens szerver route-okhoz
+- `app/stores/cart.ts` – `producerId` + `producerName` state és `setProducer()` hozzáadva
+- `app/pages/producers/[id].vue` – fetchById után `cartStore.setProducer()` hívás
+- `app/pages/penztar/index.vue` – `producerId` + `producerName` átadva barion-start-nak
+- `server/api/barion-start.post.ts` – séma: `producerId`/`producerName` opcionális mezők; Supabase `pending_orders` INSERT fizetés indítása után
+- `server/api/barion-webhook.post.ts` – Succeeded státusz esetén: `pending_orders` lekérdezés → `orders` INSERT (customer_name Barion-ból) → `pending_orders` DELETE
+- `app/pages/korabbi-rendeleseim.vue` – ÚJ: rendelések listája Supabase-ből; kártyák (customer_name / producer_name, timestamp, összeg); created_at DESC rendezés; üres állapot kezelése
+- `app/components/AppHeader.vue` – profil ikon: `NuxtLink to="/korabbi-rendeleseim"` (navigálható); logo4: `clip-path: circle(48%)` CSS fix (fehér négyzet háttér eltűnik)
+- `db/migrations/upload-rand-images.js` – ÚJ: 10 rand- kép (public/pictures/) feltöltése Supabase Storage `producers/` mappájába + producers tábla image URL frissítése
+- `package.json` – `upload-rand-images` npm script hozzáadva
+
 ---
 
 <!-- Minden iteráció végén adj hozzá egy új ## Iteráció X blokkot rövid bullet pontokkal -->

@@ -29,7 +29,7 @@ const emit = defineEmits<{
       />
     </div>
     <span
-      class="text-xs font-medium text-center leading-tight max-w-[64px] truncate transition-colors duration-300"
+      class="text-xs font-medium text-center leading-tight max-w-[80px] break-words transition-colors duration-300"
       :class="selected ? 'text-green-700' : 'text-gray-600'"
     >
       {{ product.label }}

@@ -13,6 +13,9 @@ const activeModal = ref<PopularProduct | null>(null)
 onMounted(async () => {
   cartStore.reset()
   await producersStore.fetchById(route.params.id as string)
+  if (producer.value) {
+    cartStore.setProducer(producer.value.id, producer.value.name)
+  }
 })
 
 onUnmounted(() => {

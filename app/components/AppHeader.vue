@@ -29,15 +29,19 @@ watch(menuOpen, (val) => {
 
       <!-- Logo (center) -->
       <NuxtLink to="/" class="absolute left-1/2 -translate-x-1/2">
-        <img src="/pictures/logo4.png" alt="MEKKK" class="h-10 object-contain" />
+        <img src="/pictures/logo4.png" alt="MEKKK" class="h-10 object-contain" style="clip-path: circle(48%)" />
       </NuxtLink>
 
-      <!-- Profile icon (right, functionless) -->
-      <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+      <!-- Profile icon (right) -->
+      <NuxtLink
+        to="/korabbi-rendeleseim"
+        class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"
+        aria-label="Korábbi rendeléseim"
+      >
         <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
         </svg>
-      </div>
+      </NuxtLink>
     </div>
 
     <!-- Breadcrumbs -->

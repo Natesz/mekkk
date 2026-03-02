@@ -26,6 +26,8 @@ async function payWithBarion() {
         })),
         total: cartStore.totalPrice,
         note: cartStore.note || undefined,
+        producerId: cartStore.producerId || undefined,
+        producerName: cartStore.producerName || undefined,
       },
     })
     window.location.href = gatewayUrl

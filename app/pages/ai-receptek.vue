@@ -8,6 +8,7 @@ const selectedIds = ref<string[]>([])
 const isGenerating = ref(false)
 const generatingStep = ref<'recipe' | 'image' | null>(null)
 const error = ref<string | null>(null)
+const imageError = ref<string | null>(null)
 
 interface Recipe {
   title: string
@@ -51,6 +52,7 @@ async function generateRecipe() {
   imageUrl.value = null
   imageLoaded.value = false
   error.value = null
+  imageError.value = null
 
   try {
     const productNames = selectedProducts.value.map(p => p.name)
@@ -61,15 +63,22 @@ async function generateRecipe() {
       body: { products: productNames },
     })
     recipe.value = result
+  } catch {
+    error.value = 'Nem sikerült generálni a receptet. Kérjük, próbáld újra.'
+    isGenerating.value = false
+    generatingStep.value = null
+    return
+  }
 
+  try {
     generatingStep.value = 'image'
     const imageResult = await $fetch<{ url: string }>('/api/generate-recipe-image', {
       method: 'POST',
-      body: { recipeTitle: result.title },
+      body: { recipeTitle: recipe.value!.title },
     })
     imageUrl.value = imageResult.url
   } catch {
-    error.value = 'Nem sikerült generálni a receptet. Kérjük, próbáld újra.'
+    imageError.value = 'A kép generálása nem sikerült, de a recept elkészült.'
   } finally {
     isGenerating.value = false
     generatingStep.value = null
@@ -169,7 +178,10 @@ const loadingText = computed(() => {
         <div v-if="recipe" class="mt-6">
           <!-- Food image -->
           <div class="w-full rounded-2xl overflow-hidden mb-5" style="aspect-ratio: 16/9">
-            <div v-if="!imageUrl || !imageLoaded" class="w-full h-full bg-gray-100 animate-pulse rounded-2xl" />
+            <div v-if="!imageUrl && !imageError" class="w-full h-full bg-gray-100 animate-pulse rounded-2xl" />
+            <div v-if="imageError" class="w-full h-full bg-gray-50 rounded-2xl flex items-center justify-center px-6">
+              <p class="text-sm text-gray-500 text-center">{{ imageError }}</p>
+            </div>
             <img
               v-if="imageUrl"
               :src="imageUrl"

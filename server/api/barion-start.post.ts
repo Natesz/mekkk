@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { useSupabaseServer } from '../utils/supabaseServer'
 
 const schema = z.object({
   items: z.array(z.object({
@@ -8,6 +9,8 @@ const schema = z.object({
   })).min(1),
   total: z.number().positive(),
   note: z.string().optional(),
+  producerId: z.string().optional(),
+  producerName: z.string().optional(),
 })
 
 export default defineEventHandler(async (event) => {
@@ -56,6 +59,15 @@ export default defineEventHandler(async (event) => {
   if (res.Errors?.length) {
     throw createError({ statusCode: 400, message: res.Errors[0].Description ?? 'Barion hiba' })
   }
+
+  const supabase = useSupabaseServer()
+  await supabase.from('pending_orders').insert({
+    payment_id: res.PaymentId,
+    producer_id: body.producerId ?? null,
+    producer_name: body.producerName ?? null,
+    total_amount: body.total,
+    items: body.items,
+  })
 
   return { gatewayUrl: res.GatewayUrl, paymentId: res.PaymentId }
 })

@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "migrate": "node db/migrations/migrate.js",
     "populate": "node db/migrations/populate.js",
-    "update-products": "node db/migrations/update-products.js"
+    "update-products": "node db/migrations/update-products.js",
+    "upload-rand-images": "node --env-file=.env db/migrations/upload-rand-images.js"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",

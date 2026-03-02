@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   runtimeConfig: {
     openaiApiKey: '',
+    supabaseServiceRoleKey: '',
     barionPosKey: process.env.BARION_POS_KEY ?? '',
     barionPayeeEmail: process.env.BARION_PAYEE_EMAIL ?? '',
     barionWebhookUrl: process.env.BARION_WEBHOOK_URL ?? '',
