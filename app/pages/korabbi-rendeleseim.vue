@@ -15,6 +15,7 @@ interface Order {
   total_amount: number
   items: OrderItem[]
   customer_name: string | null
+  customer_email: string | null
 }
 
 const supabase = useSupabase()
@@ -77,12 +78,17 @@ function formatDate(iso: string): string {
           :key="order.id"
           class="rounded-2xl border border-gray-100 px-4 py-4 shadow-sm"
         >
-          <!-- Top: name -->
+          <!-- Top: customer name or producer name -->
           <p class="font-semibold text-gray-900 text-sm mb-0.5">
             {{ order.customer_name ?? order.producer_name ?? 'Ismeretlen termelő' }}
           </p>
 
-          <!-- Producer below name if customer_name exists -->
+          <!-- Email a név alatt -->
+          <p v-if="order.customer_email" class="text-xs text-gray-400 mb-0.5">
+            {{ order.customer_email }}
+          </p>
+
+          <!-- Producer a customer_name alatt -->
           <p v-if="order.customer_name && order.producer_name" class="text-xs text-gray-500 mb-2">
             {{ order.producer_name }}
           </p>

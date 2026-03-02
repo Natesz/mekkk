@@ -46,15 +46,21 @@ export default defineEventHandler(async (event) => {
             customer_name: customerName,
           }
 
-      const { error: insertErr } = await supabase.from('orders').insert(orderData)
-      if (insertErr) {
-        console.error('[Barion webhook] orders insert:', insertErr.message)
-      } else {
-        if (pending) {
-          await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
-        }
-        console.log(`[Barion] order saved for paymentId ${paymentId}`)
+      // Duplikátum védelem (barion-verify már menthette)
+      const { data: existingOrder } = await supabase
+        .from('orders').select('id').eq('payment_id', paymentId).maybeSingle()
+
+      if (!existingOrder) {
+        const { error: insertErr } = await supabase.from('orders').insert({
+          ...orderData,
+          payment_id: paymentId,
+        })
+        if (insertErr) console.error('[Barion webhook] orders insert:', insertErr.message)
+        else console.log(`[Barion webhook] order saved for ${paymentId}`)
       }
+
+      // pending_orders cleanup mindenképpen
+      await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
     }
   } catch (e) {
     console.error('[Barion webhook]', e)

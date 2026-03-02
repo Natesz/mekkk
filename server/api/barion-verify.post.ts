@@ -1,5 +1,19 @@
 import { useSupabaseServer } from '../utils/supabaseServer'
 
+function parsePayer(raw: any): { name: string | null; email: string | null } {
+  if (!raw) return { name: null, email: null }
+  // Barion a Payer.Name-t JSON stringként adja vissza
+  let payer: any = raw
+  if (typeof raw === 'string') {
+    try { payer = JSON.parse(raw) } catch { return { name: raw, email: null } }
+  }
+  const lastName = payer.LastName ?? ''
+  const firstName = payer.FirstName ?? ''
+  const name = [lastName, firstName].filter(Boolean).join(' ') || null
+  const email = payer.LoginName ?? null
+  return { name, email }
+}
+
 export default defineEventHandler(async (event) => {
   const { paymentId } = await readBody(event)
   const config = useRuntimeConfig()
@@ -17,8 +31,6 @@ export default defineEventHandler(async (event) => {
     )
   } catch (e: any) {
     console.error('[barion-verify] GetPaymentState hiba:', e?.message ?? e)
-    console.error('[barion-verify] barionApiBase:', config.barionApiBase)
-    console.error('[barion-verify] barionPosKey set:', !!config.barionPosKey)
     throw createError({ statusCode: 502, message: 'Barion státusz lekérdezés sikertelen' })
   }
 
@@ -28,9 +40,9 @@ export default defineEventHandler(async (event) => {
     return { succeeded: false, status: state.Status }
   }
 
-  // ── Duplikátum védelem ────────────────────────────────────────────────────
   const supabase = useSupabaseServer()
 
+  // ── Duplikátum védelem + pending_orders cleanup ───────────────────────────
   const { data: existing } = await supabase
     .from('orders')
     .select('id')
@@ -38,6 +50,8 @@ export default defineEventHandler(async (event) => {
     .maybeSingle()
 
   if (existing) {
+    // Cleanup: pending_orders törlése akkor is ha már be volt mentve
+    await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
     return { succeeded: true, alreadySaved: true }
   }
 
@@ -48,7 +62,9 @@ export default defineEventHandler(async (event) => {
     .eq('payment_id', paymentId)
     .maybeSingle()
 
-  const customerName = state.Transactions?.[0]?.Payer?.Name ?? null
+  const { name: customerName, email: customerEmail } = parsePayer(
+    state.Transactions?.[0]?.Payer?.Name ?? null,
+  )
 
   const orderData = pending
     ? {
@@ -58,6 +74,7 @@ export default defineEventHandler(async (event) => {
         total_amount: pending.total_amount,
         items: pending.items,
         customer_name: customerName,
+        customer_email: customerEmail,
       }
     : {
         payment_id: paymentId,
@@ -70,6 +87,7 @@ export default defineEventHandler(async (event) => {
           unitPrice: i.UnitPrice,
         })),
         customer_name: customerName,
+        customer_email: customerEmail,
       }
 
   const { error } = await supabase.from('orders').insert(orderData)
@@ -78,9 +96,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: 'Rendelés mentése sikertelen' })
   }
 
-  if (pending) {
-    await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
-  }
+  await supabase.from('pending_orders').delete().eq('payment_id', paymentId)
 
   return { succeeded: true }
 })

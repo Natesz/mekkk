@@ -23,8 +23,12 @@ CREATE TABLE IF NOT EXISTS orders (
   producer_name TEXT,
   total_amount  NUMERIC     NOT NULL,
   items         JSONB       NOT NULL,
-  customer_name TEXT
+  customer_name  TEXT,
+  customer_email TEXT
 );
+
+-- Ha a tábla már létezik:
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_email TEXT;
 
 -- Ha a tábla már létezik (korábbi migráció), add hozzá a payment_id oszlopot:
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_id TEXT UNIQUE;
