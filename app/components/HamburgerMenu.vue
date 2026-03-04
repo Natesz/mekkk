@@ -30,7 +30,7 @@ function navigate(path: string) {
         <!-- Header -->
         <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100">
           <NuxtLink to="/" @click="emit('close')">
-            <img src="/pictures/logo4.png" alt="MEKKK" class="h-8 object-contain" />
+            <img src="/pictures/logo4.png" alt="MEKKK" class="h-8 object-contain" style="clip-path: circle(48%)" />
           </NuxtLink>
           <button
             class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"

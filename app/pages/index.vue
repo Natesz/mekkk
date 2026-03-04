@@ -26,11 +26,9 @@ onMounted(async () => {
 async function handleSelectProduct(id: string) {
   if (productsStore.selectedProductId === id) {
     productsStore.resetSelection()
-    resetFilters()
     await producersStore.fetchAll()
   } else {
     productsStore.selectProduct(id)
-    resetFilters()
     await producersStore.fetchByProductId(id)
   }
 }
@@ -75,7 +73,7 @@ function handleResetRating() {
     <AppHeader />
 
     <main>
-      <section class="pt-4">
+      <section class="pt-2">
         <div v-if="productsLoading" class="flex justify-center py-6">
           <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
         </div>
@@ -87,7 +85,7 @@ function handleResetRating() {
         />
       </section>
 
-      <section class="mt-3">
+      <section class="mt-2">
         <FilterRow
           :filter30min="filter30min"
           :rating-threshold="ratingThreshold"
@@ -101,7 +99,7 @@ function handleResetRating() {
         />
       </section>
 
-      <section class="mt-4 pb-8">
+      <section class="mt-3 pb-8">
         <div v-if="producersStore.loading" class="flex justify-center py-8">
           <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
         </div>

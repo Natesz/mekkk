@@ -32,14 +32,14 @@ watch(menuOpen, (val) => {
         <img src="/pictures/logo4.png" alt="MEKKK" class="h-10 object-contain" style="clip-path: circle(48%)" />
       </NuxtLink>
 
-      <!-- Profile icon (right) -->
+      <!-- Cart icon (right) -->
       <NuxtLink
         to="/korabbi-rendeleseim"
         class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"
         aria-label="Korábbi rendeléseim"
       >
         <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+          <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
         </svg>
       </NuxtLink>
     </div>
